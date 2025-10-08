@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Flask Web UI for Reddit F1 Streaming Demo
-Hiển thị live data từ PostgreSQL với các tính năng tương tác
-"""
-
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 import psycopg2
@@ -14,7 +8,6 @@ import uuid
 app = Flask(__name__)
 CORS(app)
 
-# Database configuration
 DB_CONFIG = {
     'host': 'localhost',
     'database': 'mydb',
@@ -82,7 +75,6 @@ def get_posts():
         
         posts = cursor.fetchall()
         
-        # Convert datetime to string
         for post in posts:
             if post['created_utc']:
                 post['created_utc'] = post['created_utc'].isoformat()
@@ -156,13 +148,12 @@ def get_post_comments(post_id):
     cursor = conn.cursor()
     
     try:
-        # Xác định sort order
         if sort == 'new':
             order_by = "created_utc DESC"
         elif sort == 'controversial':
-            # Controversial = có nhiều upvote và downvote (giả sử bằng score gần 0 nhưng có activity)
+
             order_by = "ABS(score) DESC, created_utc DESC"
-        else:  # best/top
+        else:  
             order_by = "score DESC, created_utc DESC"
         
         query = f"""
@@ -175,7 +166,6 @@ def get_post_comments(post_id):
         cursor.execute(query, (post_id, limit))
         comments = cursor.fetchall()
         
-        # Convert datetime to string
         for comment in comments:
             if comment['created_utc']:
                 comment['created_utc'] = comment['created_utc'].isoformat()
@@ -244,7 +234,6 @@ def get_post_scores():
     cursor = conn.cursor()
     
     try:
-        # Lấy tất cả posts (hoặc 7 ngày gần nhất nếu có nhiều data)
         cursor.execute("""
             SELECT 
                 id,
@@ -259,8 +248,7 @@ def get_post_scores():
         """)
         
         posts = cursor.fetchall()
-        
-        # Format data for Chart.js
+
         data = {
             'labels': [],
             'datasets': []
@@ -268,8 +256,7 @@ def get_post_scores():
         
         for post in posts:
             data['labels'].append(post['created_utc'].strftime('%H:%M'))
-        
-        # Tạo dataset
+
         scores = [post['score'] for post in posts]
         data['datasets'].append({
             'label': 'Post Score',
@@ -346,7 +333,6 @@ def get_best_of():
     cursor = conn.cursor()
     
     try:
-        # Top posts
         cursor.execute("""
             SELECT id, title, score, flair, created_utc
             FROM posts
@@ -356,7 +342,6 @@ def get_best_of():
         """)
         top_posts = cursor.fetchall()
         
-        # Top comments
         cursor.execute("""
             SELECT c.id, c.content, c.score, c.author, c.post_id, p.title as post_title
             FROM comments c
@@ -367,7 +352,6 @@ def get_best_of():
         """)
         top_comments = cursor.fetchall()
         
-        # Convert datetime
         for post in top_posts:
             if post['created_utc']:
                 post['created_utc'] = post['created_utc'].isoformat()
@@ -545,10 +529,6 @@ def get_flairs():
     finally:
         cursor.close()
         conn.close()
-
-# ====================================================================================
-# Main
-# ====================================================================================
 
 if __name__ == '__main__':
     print("=" * 60)
