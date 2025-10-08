@@ -200,6 +200,43 @@ def get_post_comments(post_id):
 # API ENDPOINTS - Dashboard Analytics
 # ====================================================================================
 
+@app.route('/api/analytics/stats')
+def get_analytics_stats():
+    """Lấy tổng số posts, comments, contributors cho stats cards"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT 
+                (SELECT COUNT(*) FROM posts WHERE created_utc >= NOW() - INTERVAL '7 days') as total_posts,
+                (SELECT COUNT(*) FROM comments WHERE created_utc >= NOW() - INTERVAL '7 days') as total_comments,
+                (SELECT COUNT(DISTINCT author) FROM comments 
+                 WHERE created_utc >= NOW() - INTERVAL '7 days' 
+                 AND author != '[deleted]') as total_contributors
+        """)
+        
+        stats = cursor.fetchone()
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'total_posts': stats['total_posts'],
+                'total_comments': stats['total_comments'],
+                'total_contributors': stats['total_contributors']
+            }
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+    
+    finally:
+        cursor.close()
+        conn.close()
+
 @app.route('/api/analytics/post-scores')
 def get_post_scores():
     """Lấy dữ liệu điểm số posts theo thời gian"""

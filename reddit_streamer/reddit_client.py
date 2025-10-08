@@ -20,7 +20,7 @@ class RedditStreamer:
         
         self.reddit = praw.Reddit(
             client_id="",
-            client_secret="X2wgkb5Xi4YEzV86Im_YSBfLU22eqg",
+            client_secret="",
             user_agent="F1StreamBot by u/Icy_Physics4247",
             username="Icy_Physics4247"
         )
