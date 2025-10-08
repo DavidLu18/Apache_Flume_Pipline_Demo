@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Analytics - Reddit F1 Live{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="fas fa-tachometer-alt"></i> Live Analytics Dashboard - r/formula1
+            <span class="badge bg-danger ms-2">LIVE</span>
+        </h2>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card stats-card bg-primary text-white h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-white-50">Total Posts (7d)</h6>
+                        <h2 class="card-title mb-0 fw-bold" id="totalPosts">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h2>
+                    </div>
+                    <div class="stats-icon opacity-50">
+                        <i class="fas fa-newspaper fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card stats-card bg-success text-white h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-white-50">Total Comments (7d)</h6>
+                        <h2 class="card-title mb-0 fw-bold" id="totalComments">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h2>
+                    </div>
+                    <div class="stats-icon opacity-50">
+                        <i class="fas fa-comments fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card stats-card bg-warning text-dark h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 opacity-75">Active Contributors</h6>
+                        <h2 class="card-title mb-0 fw-bold" id="totalContributors">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h2>
+                    </div>
+                    <div class="stats-icon opacity-50">
+                        <i class="fas fa-users fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                <h5 class="mb-0 text-white">
+                    <i class="fas fa-chart-area"></i> Post Score Trends (7 Days)
+                    <small class="float-end opacity-75">
+                        <i class="fas fa-sync-alt fa-spin"></i> Real-time
+                    </small>
+                </h5>
+            </div>
+            <div class="card-body" style="background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);">
+                <canvas id="postScoresChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Best Of Section -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
+                <h5 class="mb-0 text-white">
+                    <i class="fas fa-trophy"></i> 🏆 Best Posts (7 Days)
+                </h5>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                <div id="bestPosts">
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-warning" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2">Loading top posts...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                <h5 class="mb-0 text-white">
+                    <i class="fas fa-star"></i> ⭐ Best Comments (7 Days)
+                </h5>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                <div id="bestComments">
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2">Loading top comments...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Contributors -->
+<div class="row mb-5">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%);">
+                <h5 class="mb-0 text-white">
+                    <i class="fas fa-medal"></i> 🎖️ Top 10 Contributors (7 Days)
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 60px;" class="text-center">#</th>
+                                <th><i class="fas fa-user"></i> Username</th>
+                                <th class="text-center"><i class="fas fa-comment"></i> Comments</th>
+                                <th class="text-center"><i class="fas fa-fire"></i> Total Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contributorsTable">
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    <div class="spinner-border text-success" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="text-muted mt-2 mb-0">Loading top contributors...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let postScoresChart;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+    
+    // Auto refresh every 60 seconds
+    setInterval(loadDashboardData, 60000);
+});
+
+async function loadDashboardData() {
+    await Promise.all([
+        loadPostScoresChart(),
+        loadBestOf(),
+        loadTopContributors()
+    ]);
+}
+
+async function loadPostScoresChart() {
+    try {
+        const response = await fetch('/api/analytics/post-scores');
+        const result = await response.json();
+        
+        if (result.success) {
+            const ctx = document.getElementById('postScoresChart').getContext('2d');
+            
+            // Destroy existing chart if exists
+            if (postScoresChart) {
+                postScoresChart.destroy();
+            }
+            
+            postScoresChart = new Chart(ctx, {
+                type: 'line',
+                data: result.data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Score'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Update stats
+            if (result.data.datasets && result.data.datasets[0]) {
+                const totalPosts = result.data.labels.length;
+                document.getElementById('totalPosts').textContent = totalPosts;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading chart:', error);
+    }
+}
+
+async function loadBestOf() {
+    try {
+        const response = await fetch('/api/analytics/best-of');
+        const result = await response.json();
+        
+        if (result.success) {
+            // Best Posts
+            const bestPostsContainer = document.getElementById('bestPosts');
+            if (result.data.top_posts.length > 0) {
+                bestPostsContainer.innerHTML = result.data.top_posts.map((post, idx) => `
+                    <div class="best-item mb-3">
+                        <div class="d-flex">
+                            <div class="rank-badge me-3">
+                                ${idx + 1}
+                            </div>
+                            <div class="flex-grow-1">
+                                <a href="/post/${post.id}" class="text-decoration-none">
+                                    <strong>${escapeHtml(post.title)}</strong>
+                                </a>
+                                <div class="text-muted small mt-1">
+                                    <i class="fas fa-arrow-up"></i> ${post.score} điểm
+                                    ${post.flair ? `<span class="badge bg-primary ms-2">${escapeHtml(post.flair)}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                bestPostsContainer.innerHTML = '<p class="text-muted">Chưa có dữ liệu</p>';
+            }
+            
+            // Best Comments
+            const bestCommentsContainer = document.getElementById('bestComments');
+            if (result.data.top_comments.length > 0) {
+                bestCommentsContainer.innerHTML = result.data.top_comments.map((comment, idx) => `
+                    <div class="best-item mb-3">
+                        <div class="d-flex">
+                            <div class="rank-badge me-3">
+                                ${idx + 1}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="comment-preview">
+                                    ${escapeHtml(comment.content.substring(0, 100))}${comment.content.length > 100 ? '...' : ''}
+                                </div>
+                                <div class="text-muted small mt-1">
+                                    <i class="fas fa-arrow-up"></i> ${comment.score} điểm
+                                    • by ${escapeHtml(comment.author)}
+                                    • in <a href="/post/${comment.post_id}">${escapeHtml(comment.post_title.substring(0, 30))}...</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('totalComments').textContent = result.data.top_comments.length;
+            } else {
+                bestCommentsContainer.innerHTML = '<p class="text-muted">Chưa có dữ liệu</p>';
+            }
+        }
+    } catch (error) {
+        console.error('Error loading best of:', error);
+    }
+}
+
+async function loadTopContributors() {
+    try {
+        const response = await fetch('/api/analytics/top-contributors');
+        const result = await response.json();
+        
+        if (result.success) {
+            const tbody = document.getElementById('contributorsTable');
+            
+            if (result.data.length > 0) {
+                tbody.innerHTML = result.data.map((contributor, idx) => {
+                    const medalClass = idx === 0 ? 'bg-warning' : idx === 1 ? 'bg-secondary' : idx === 2 ? 'bg-bronze' : 'bg-light text-dark';
+                    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
+                    
+                    return `
+                    <tr class="${idx < 3 ? 'table-active' : ''}">
+                        <td class="text-center">
+                            <span class="badge ${medalClass} fs-6">${medal} ${idx + 1}</span>
+                        </td>
+                        <td>
+                            <strong class="text-primary">${escapeHtml(contributor.author)}</strong>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-primary rounded-pill">${contributor.comment_count}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-danger rounded-pill">${contributor.total_score || 0}</span>
+                        </td>
+                    </tr>
+                `}).join('');
+                
+                document.getElementById('totalContributors').textContent = result.data.length;
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No contributors data available</td></tr>';
+                document.getElementById('totalContributors').textContent = '0';
+            }
+        }
+    } catch (error) {
+        console.error('Error loading contributors:', error);
+        document.getElementById('contributorsTable').innerHTML = 
+            '<tr><td colspan="4" class="text-center text-danger py-4"><i class="fas fa-exclamation-triangle"></i> Error loading data</td></tr>';
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+</script>
+{% endblock %}

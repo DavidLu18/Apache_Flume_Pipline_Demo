@@ -1,0 +1,13 @@
+# Reddit API
+praw==7.7.1
+
+# Web Framework
+Flask==3.0.0
+Flask-CORS==4.0.0
+
+# Database
+psycopg2-binary==2.9.9
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0

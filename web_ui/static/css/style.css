@@ -1,0 +1,349 @@
+/* ====================================================================
+   Reddit F1 Streaming Demo - Custom Styles
+   ==================================================================== */
+
+/* General */
+:root {
+    --f1-red: #e10600;
+    --f1-dark: #15151e;
+    --f1-gray: #38383f;
+    --f1-gold: #ffd700;
+    --f1-silver: #c0c0c0;
+    --f1-bronze: #cd7f32;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom, #f5f5f5 0%, #e9ecef 100%);
+    min-height: 100vh;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    transition: all 0.3s ease;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    transform: translateY(-2px);
+}
+
+/* Alert Badge */
+.alert-badge {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--f1-red);
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(225, 6, 0, 0.4);
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.alert-badge:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 16px rgba(225, 6, 0, 0.6);
+}
+
+.alert-badge span {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ffc107;
+    color: #000;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Post Card */
+.post-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--f1-red);
+}
+
+.post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(225, 6, 0, 0.2);
+    border-left-width: 6px;
+}
+
+.post-title a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.post-title a:hover {
+    color: var(--f1-red);
+    text-decoration: underline;
+}
+
+.post-meta {
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.post-content {
+    color: #555;
+    line-height: 1.6;
+}
+
+.post-score {
+    min-width: 80px;
+}
+
+.score-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--f1-red);
+}
+
+.post-score-large .score-value {
+    font-size: 2.5rem;
+}
+
+.post-actions {
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+/* Comment Card */
+.comment-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #ddd;
+    transition: border-color 0.3s;
+}
+
+.comment-card:hover {
+    border-left-color: var(--f1-red);
+}
+
+.comment-highlight {
+    background-color: #fff9e6;
+    border-left-color: #ffc107;
+}
+
+.comment-score {
+    min-width: 60px;
+    text-align: center;
+}
+
+.comment-score .score-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #666;
+}
+
+.comment-meta {
+    font-size: 0.9rem;
+}
+
+.comment-content {
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Dashboard Stats Cards */
+.stats-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.stats-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.stats-card .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.stats-icon {
+    opacity: 0.2;
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover .stats-icon {
+    opacity: 0.3;
+    transform: scale(1.1);
+}
+
+/* Best Items */
+.best-item {
+    padding: 15px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-left: 3px solid var(--f1-red);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.best-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 8px rgba(225, 6, 0, 0.15);
+    border-left-width: 5px;
+}
+
+.rank-badge {
+    background: linear-gradient(135deg, var(--f1-red) 0%, #c10500 100%);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.comment-preview {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+/* Footer */
+.footer {
+    margin-top: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .post-score {
+        margin-top: 10px;
+    }
+    
+    .score-value {
+        font-size: 1.5rem;
+    }
+    
+    .stats-icon {
+        display: none;
+    }
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--f1-red);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #c00500;
+}
+
+/* Card Headers */
+.card-header {
+    font-weight: 600;
+}
+
+/* Badges */
+.badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.6em;
+}
+
+/* Tables */
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 5px;
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Sticky Sidebar */
+.sticky-top {
+    position: sticky;
+    z-index: 100;
+}
+
+/* Chart Container */
+canvas {
+    max-height: 400px;
+}
+
+/* Medal Colors */
+.bg-bronze {
+    background-color: #cd7f32 !important;
+    color: white !important;
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Table Enhancements */
+.table-hover tbody tr:hover {
+    background-color: rgba(225, 6, 0, 0.05);
+    transition: background-color 0.2s ease;
+}
+
+.table-active {
+    font-weight: 600;
+}
+

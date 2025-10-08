@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Post Detail - Reddit F1{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <!-- Post Detail -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div id="postDetail">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-danger" role="status"></div>
+                        <p class="mt-3">Đang tải post...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comment Sort -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-comments"></i> Comments
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="sortComments" id="sortBest" value="best" checked>
+                        <label class="btn btn-outline-danger" for="sortBest">
+                            <i class="fas fa-fire"></i> Best
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="sortComments" id="sortNew" value="new">
+                        <label class="btn btn-outline-danger" for="sortNew">
+                            <i class="fas fa-clock"></i> New
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="sortComments" id="sortControversial" value="controversial">
+                        <label class="btn btn-outline-danger" for="sortControversial">
+                            <i class="fas fa-bolt"></i> Controversial
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comments List -->
+        <div class="card">
+            <div class="card-body">
+                <div id="commentsContainer">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-danger" role="status"></div>
+                        <p class="mt-3">Đang tải comments...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Back Button -->
+        <div class="mt-4 mb-5">
+            <a href="/" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại Live Thread
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const postId = '{{ post_id }}';
+let currentSort = 'best';
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadPost();
+    loadComments();
+    
+    // Setup sort radio buttons
+    document.querySelectorAll('input[name="sortComments"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            currentSort = this.value;
+            loadComments();
+        });
+    });
+});
+
+async function loadPost() {
+    const container = document.getElementById('postDetail');
+    
+    try {
+        const response = await fetch(`/api/posts/${postId}`);
+        const result = await response.json();
+        
+        if (result.success) {
+            const post = result.data;
+            const date = new Date(post.created_utc);
+            
+            container.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="flex-grow-1">
+                        <h3>${escapeHtml(post.title)}</h3>
+                        <div class="post-meta mt-2">
+                            ${post.flair ? `<span class="badge bg-primary">${escapeHtml(post.flair)}</span>` : ''}
+                            <span class="text-muted ms-2">
+                                <i class="far fa-clock"></i> ${date.toLocaleString('vi-VN')}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="post-score-large ms-3">
+                        <div class="score-value">${post.score}</div>
+                        <small class="text-muted">điểm</small>
+                    </div>
+                </div>
+                ${post.content ? `
+                    <div class="post-content-full mt-4">
+                        ${escapeHtml(post.content).replace(/\n/g, '<br>')}
+                    </div>
+                ` : ''}
+                <div class="mt-4">
+                    <button class="btn btn-success" onclick="subscribeToPost('${post.id}')">
+                        <i class="fas fa-bell"></i> Theo dõi Post
+                    </button>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Không tìm thấy post.
+                </div>
+            `;
+        }
+    } catch (error) {
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> Lỗi: ${error.message}
+            </div>
+        `;
+    }
+}
+
+async function loadComments() {
+    const container = document.getElementById('commentsContainer');
+    
+    try {
+        const response = await fetch(`/api/posts/${postId}/comments?sort=${currentSort}&limit=50`);
+        const result = await response.json();
+        
+        if (result.success && result.data.length > 0) {
+            container.innerHTML = result.data.map(comment => renderComment(comment)).join('');
+        } else {
+            container.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Chưa có comments nào.
+                </div>
+            `;
+        }
+    } catch (error) {
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> Lỗi: ${error.message}
+            </div>
+        `;
+    }
+}
+
+function renderComment(comment) {
+    const date = new Date(comment.created_utc);
+    const timeAgo = getTimeAgo(date);
+    
+    // Highlight cho high-score comments
+    const highlightClass = comment.score > 50 ? 'comment-highlight' : '';
+    
+    return `
+        <div class="comment-card ${highlightClass} mb-3">
+            <div class="d-flex">
+                <div class="comment-score me-3">
+                    <div class="score-value">${comment.score}</div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="comment-meta mb-2">
+                        <strong>${escapeHtml(comment.author || '[deleted]')}</strong>
+                        <span class="text-muted ms-2">
+                            <i class="far fa-clock"></i> ${timeAgo}
+                        </span>
+                        ${comment.score > 50 ? '<span class="badge bg-warning text-dark ms-2"><i class="fas fa-star"></i> Nổi bật</span>' : ''}
+                    </div>
+                    <div class="comment-content">
+                        ${escapeHtml(comment.content).replace(/\n/g, '<br>')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+async function subscribeToPost(postId) {
+    try {
+        const response = await fetch('/api/subscriptions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                post_id: postId,
+                user_id: 'demo_user'
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✓ Đã theo dõi post này! Bạn sẽ nhận thông báo khi có comments mới.');
+        } else {
+            alert('✗ Lỗi: ' + result.error);
+        }
+    } catch (error) {
+        alert('✗ Lỗi: ' + error.message);
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function getTimeAgo(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'Vừa xong';
+    if (diffMins < 60) return `${diffMins} phút trước`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} giờ trước`;
+    
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} ngày trước`;
+}
+</script>
+{% endblock %}
