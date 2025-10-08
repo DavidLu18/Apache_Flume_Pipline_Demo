@@ -220,9 +220,9 @@ EOF
 
 File `reddit_streamer/reddit_client.py` đã có credentials sẵn:
 ```python
-client_id = "ByJ-B0AwTtVZLdF6ly_eKw"
-client_secret = "X2wgkb5Xi4YEzV86Im_YSBfLU22eqg"
-username = "Icy_Physics4247"
+client_id = "...."
+client_secret = "...."
+username = "...."
 ```
 
 **Nếu cần thay đổi:**
